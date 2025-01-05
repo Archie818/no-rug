@@ -1,100 +1,129 @@
-import Image from "next/image";
+"use client";
+
+import { WalletButton } from "./components/WalletButton";
+import { useState } from "react";
+import { ThemeSwitcher } from "./components/ThemeSwitcher";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [messages, setMessages] = useState<
+    Array<{ role: "user" | "assistant"; content: string }>
+  >([]);
+  const [input, setInput] = useState("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    setMessages((prev) => [...prev, { role: "user", content: input }]);
+    const analysis = "Analyzing token: " + input;
+    setMessages((prev) => [...prev, { role: "assistant", content: analysis }]);
+    setInput("");
+  };
+
+  return (
+    <div className="grid grid-rows-[auto_1fr_auto] min-h-screen p-8 text-black dark:text-white">
+      <header className="w-full flex justify-between items-center mb-8">
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold text-black dark:text-white">
+            No Rug
+          </h1>
+          <ThemeSwitcher />
+        </div>
+        <WalletButton />
+      </header>
+
+      <main className="flex flex-col max-w-3xl mx-auto w-full">
+        {messages.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center -mt-32 space-y-8">
+            <div className="text-center space-y-6">
+              <div className="w-24 h-24 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center text-3xl mx-auto">
+                🔍️
+              </div>
+              <h2 className="text-4xl font-bold text-black dark:text-white">
+                No Rug Protection
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 max-w-md">
+                Analyze Solana tokens instantly to detect potential risks and
+                protect your investments.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="w-full max-w-2xl px-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Enter token address to analyze..."
+                  className="flex-1 p-4 border rounded-xl bg-white dark:bg-gray-800 text-black dark:text-white border-gray-200 dark:border-gray-700 text-lg placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                />
+                <button
+                  type="submit"
+                  className="px-8 py-4 bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black rounded-xl text-lg font-medium"
+                >
+                  Analyze
+                </button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          <>
+            <div className="flex-1 space-y-4 mb-4">
+              {messages.map((message, i) => (
+                <div
+                  key={i}
+                  className={`p-4 rounded-lg ${
+                    message.role === "user"
+                      ? "bg-black dark:bg-white text-white dark:text-black ml-auto"
+                      : "bg-gray-100 dark:bg-gray-800 text-black dark:text-white mr-auto"
+                  } max-w-[80%]`}
+                >
+                  {message.content}
+                </div>
+              ))}
+            </div>
+
+            <form onSubmit={handleSubmit} className="sticky bottom-0 w-full">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Enter token address..."
+                  className="flex-1 p-3 border rounded-lg bg-white dark:bg-gray-800 text-black dark:text-white border-gray-200 dark:border-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                />
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black rounded-lg"
+                >
+                  Analyze
+                </button>
+              </div>
+            </form>
+          </>
+        )}
+      </main>
+
+      <footer className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+        <p>© 2024 No Rug. Built on Solana.</p>
+        <div className="flex gap-4 justify-center mt-2">
           <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            href="https://twitter.com/your-handle"
             target="_blank"
             rel="noopener noreferrer"
+            className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
+            Twitter
           </a>
           <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            href="https://github.com/your-repo"
             target="_blank"
             rel="noopener noreferrer"
+            className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
           >
-            Read our docs
+            GitHub
           </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
       </footer>
     </div>
   );
